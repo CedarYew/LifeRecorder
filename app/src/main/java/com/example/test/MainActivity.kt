@@ -5,8 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.test.data.model.Task
@@ -34,21 +33,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestTheme {
                 val tasks by viewModel.allTasks.collectAsState(initial = emptyList())
+                var showEditDialog by remember { mutableStateOf(false) }
+                var currentEditTask by remember { mutableStateOf<Task?>(null) }
                 
                 MainScreen(
                     tasks = tasks,
                     onAddTask = {
-                        // 创建新任务
-                        viewModel.addTask(
-                            Task(
-                                name = "Task name",
-                                description = "Task description",
-                                planStart = LocalDateTime.now().hour
-                            )
-                        )
+                        showEditDialog = true
+                        currentEditTask = null
                     },
                     onEditTask = { task ->
-                        // TODO: 显示编辑对话框
+                        showEditDialog = true
+                        currentEditTask = task
                     },
                     onDeleteTask = { taskId ->
                         viewModel.deleteTask(taskId)
@@ -70,6 +66,21 @@ class MainActivity : ComponentActivity() {
                                 else null
                             )
                         )
+                    },
+                    onSaveTask = { task ->
+                        if (task.id == 0) {
+                            viewModel.addTask(task)
+                        } else {
+                            viewModel.updateTask(task)
+                        }
+                        showEditDialog = false
+                        currentEditTask = null
+                    },
+                    showEditDialog = showEditDialog,
+                    currentEditTask = currentEditTask,
+                    onDismissDialog = {
+                        showEditDialog = false
+                        currentEditTask = null
                     }
                 )
             }

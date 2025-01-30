@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.test.R
 import com.example.test.data.model.Task
+import com.example.test.ui.dialog.EditTaskDialog
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -27,7 +28,11 @@ fun MainScreen(
     onEditTask: (Task) -> Unit,
     onDeleteTask: (Int) -> Unit,
     onToggleStart: (Task) -> Unit,
-    onToggleEnd: (Task) -> Unit
+    onToggleEnd: (Task) -> Unit,
+    onSaveTask: (Task) -> Unit,
+    showEditDialog: Boolean,
+    currentEditTask: Task?,
+    onDismissDialog: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     
@@ -77,6 +82,14 @@ fun MainScreen(
                 onToggleEnd = onToggleEnd
             )
         }
+    }
+
+    if (showEditDialog) {
+        EditTaskDialog(
+            task = currentEditTask,
+            onDismiss = onDismissDialog,
+            onConfirm = onSaveTask
+        )
     }
 }
 
