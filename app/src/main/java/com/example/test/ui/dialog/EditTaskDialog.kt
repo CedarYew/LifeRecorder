@@ -6,7 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.test.data.model.Task
-import java.time.LocalDateTime
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun EditTaskDialog(
@@ -16,7 +17,10 @@ fun EditTaskDialog(
 ) {
     var name by remember { mutableStateOf(task?.name ?: "") }
     var description by remember { mutableStateOf(task?.description ?: "") }
-    var planStart by remember { mutableStateOf(task?.planStart?.toString() ?: LocalDateTime.now().hour.toString()) }
+    var planStart by remember {
+        mutableStateOf(task?.planStart?.toString() ?:
+            Calendar.getInstance().get(Calendar.HOUR_OF_DAY).toString())
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -60,7 +64,8 @@ fun EditTaskDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val startHour = planStart.toIntOrNull() ?: LocalDateTime.now().hour
+                    val startHour = planStart.toIntOrNull() ?:
+                        Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
                     val newTask = Task(
                         id = task?.id ?: 0,
                         name = name.takeIf { it.isNotBlank() } ?: "Task name",
@@ -68,8 +73,8 @@ fun EditTaskDialog(
                         planStart = startHour,
                         startTime = task?.startTime,
                         endTime = task?.endTime,
-                        createTime = task?.createTime ?: LocalDateTime.now().toString(),
-                        updateTime = LocalDateTime.now().toString()
+                        createTime = task?.createTime ?: Date().toString(),
+                        updateTime = Date().toString()
                     )
                     onConfirm(newTask)
                 }
