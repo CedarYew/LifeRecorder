@@ -41,8 +41,8 @@ class MainActivity : ComponentActivity() {
                         // 创建新任务
                         viewModel.addTask(
                             Task(
-                                name = "新任务",
-                                description = "请编辑任务描述",
+                                name = "Task name",
+                                description = "Task description",
                                 planStart = LocalDateTime.now().hour
                             )
                         )

@@ -154,32 +154,88 @@ fun TaskItem(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Checkbox(
-            checked = task.startTime != null,
-            onCheckedChange = { onToggleStart() }
-        )
-        Checkbox(
-            checked = task.endTime != null,
-            onCheckedChange = { onToggleEnd() }
-        )
-        Column(
-            modifier = Modifier.weight(1f)
+        // 开始时间
+        Row(
+            modifier = Modifier.width(80.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = task.startTime != null,
+                onCheckedChange = { onToggleStart() }
+            )
+            if (task.startTime != null) {
+                Text(
+                    text = formatTime(task.startTime),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            } else {
+                Text(
+                    text = "Start",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
+        
+        // 结束时间
+        Row(
+            modifier = Modifier.width(100.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = task.endTime != null,
+                onCheckedChange = { onToggleEnd() }
+            )
+            if (task.endTime != null) {
+                Text(
+                    text = formatTime(task.endTime),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            } else {
+                Text(
+                    text = "End",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
+        
+        // 任务名称和描述
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = task.name,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
             )
             Text(
                 text = task.description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = Color.Gray,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
             )
         }
     }
 }
 
+private fun formatTime(timeString: String): String {
+    return try {
+        val dateTime = LocalDateTime.parse(timeString)
+        dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    } catch (e: Exception) {
+        timeString
+    }
+}
+
 private fun getCurrentDateInfo(): String {
     val now = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("M月d日，EEEE")
-    return "${now.format(formatter)}，晴，开心" // 天气和心情可以从数据源获取
+    val formatter = DateTimeFormatter.ofPattern("M.d, EEEE")
+    return "${now.format(formatter)}, Sunny, Happy" // 天气和心情可以从数据源获取
 } 
