@@ -13,7 +13,7 @@ import com.example.test.data.repository.TaskRepository
 import com.example.test.ui.screen.MainScreen
 import com.example.test.ui.theme.TestTheme
 import com.example.test.ui.viewmodel.TaskViewModel
-import java.time.LocalDateTime
+import java.util.*
 
 class MainActivity : ComponentActivity() {
     private val viewModel: TaskViewModel by viewModels {
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                         viewModel.updateTask(
                             task.copy(
                                 startTime = if (task.startTime == null) 
-                                    LocalDateTime.now().toString() 
+                                    Date().toString() 
                                 else null
                             )
                         )
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                         viewModel.updateTask(
                             task.copy(
                                 endTime = if (task.endTime == null) 
-                                    LocalDateTime.now().toString() 
+                                    Date().toString() 
                                 else null
                             )
                         )
