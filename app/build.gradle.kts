@@ -78,4 +78,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
+    implementation(libs.material.icons.extended)
 }

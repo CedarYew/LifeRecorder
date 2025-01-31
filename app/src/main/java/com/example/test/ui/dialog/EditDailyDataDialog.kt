@@ -6,6 +6,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.test.data.model.DailyData
+import com.example.test.data.model.WeatherType
+import com.example.test.data.model.MoodType
+import com.example.test.data.model.SleepType
+import com.example.test.ui.component.IconSelector
 
 @Composable
 fun EditDailyDataDialog(
@@ -27,31 +31,52 @@ fun EditDailyDataDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedTextField(
-                    value = weather,
-                    onValueChange = { weather = it },
-                    label = { Text("Weather") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column {
+                    Text(
+                        text = "Weather",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    IconSelector(
+                        options = WeatherType.values(),
+                        selectedOption = weather,
+                        onOptionSelected = { weather = it },
+                        getIcon = { it.icon },
+                        getLabel = { it.label }
+                    )
+                }
 
-                OutlinedTextField(
-                    value = mood,
-                    onValueChange = { mood = it },
-                    label = { Text("Mood") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column {
+                    Text(
+                        text = "Mood",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    IconSelector(
+                        options = MoodType.values(),
+                        selectedOption = mood,
+                        onOptionSelected = { mood = it },
+                        getIcon = { it.icon },
+                        getLabel = { it.label }
+                    )
+                }
 
-                OutlinedTextField(
-                    value = sleep,
-                    onValueChange = { sleep = it },
-                    label = { Text("Sleep") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column {
+                    Text(
+                        text = "Sleep",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    IconSelector(
+                        options = SleepType.values(),
+                        selectedOption = sleep,
+                        onOptionSelected = { sleep = it },
+                        getIcon = { it.icon },
+                        getLabel = { it.label }
+                    )
+                }
 
                 OutlinedTextField(
                     value = income,
