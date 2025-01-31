@@ -13,7 +13,9 @@ import com.example.test.data.repository.TaskRepository
 import com.example.test.ui.screen.MainScreen
 import com.example.test.ui.theme.TestTheme
 import com.example.test.ui.viewmodel.TaskViewModel
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private val viewModel: TaskViewModel by viewModels {
@@ -52,8 +54,8 @@ class MainActivity : ComponentActivity() {
                     onToggleStart = { task ->
                         viewModel.updateTask(
                             task.copy(
-                                startTime = if (task.startTime == null) 
-                                    Date().toString() 
+                                startTime = if (task.startTime == null)
+                                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                                 else null
                             )
                         )
@@ -61,8 +63,8 @@ class MainActivity : ComponentActivity() {
                     onToggleEnd = { task ->
                         viewModel.updateTask(
                             task.copy(
-                                endTime = if (task.endTime == null) 
-                                    Date().toString() 
+                                endTime = if (task.endTime == null)
+                                    SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                                 else null
                             )
                         )
