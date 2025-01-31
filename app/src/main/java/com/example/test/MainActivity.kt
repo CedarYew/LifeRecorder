@@ -92,6 +92,9 @@ class MainActivity : ComponentActivity() {
                     currentDate = currentDate,
                     onDateSelected = { date ->
                         viewModel.updateCurrentDate(date)
+                    },
+                    onUpdateDailyData = { updatedDailyData ->
+                        viewModel.updateDailyData(updatedDailyData)
                     }
                 )
             }

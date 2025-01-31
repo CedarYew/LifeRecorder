@@ -23,6 +23,7 @@ import com.example.test.data.model.Task
 import com.example.test.data.model.DailyData
 import com.example.test.ui.dialog.CalendarDialog
 import com.example.test.ui.dialog.EditTaskDialog
+import com.example.test.ui.dialog.EditDailyDataDialog
 import java.text.SimpleDateFormat
 import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +41,8 @@ fun MainScreen(
     currentEditTask: Task?,
     onDismissDialog: () -> Unit,
     currentDate: Int,
-    onDateSelected: (Long) -> Unit
+    onDateSelected: (Long) -> Unit,
+    onUpdateDailyData: (DailyData) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var showCalendarDialog by remember { mutableStateOf(false) }
@@ -89,7 +91,8 @@ fun MainScreen(
                 onEditTask = onEditTask,
                 onDeleteTask = onDeleteTask,
                 onToggleStart = onToggleStart,
-                onToggleEnd = onToggleEnd
+                onToggleEnd = onToggleEnd,
+                onEditDailyData = onUpdateDailyData
             )
         }
     }
@@ -122,12 +125,13 @@ private fun TaskList(
     onEditTask: (Task) -> Unit,
     onDeleteTask: (Int) -> Unit,
     onToggleStart: (Task) -> Unit,
-    onToggleEnd: (Task) -> Unit
+    onToggleEnd: (Task) -> Unit,
+    onEditDailyData: (DailyData) -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        // 日期和天气信息
-        Text(
-            text = formatDateInfo(dailyData),
+        DailyHeader(
+            dailyData = dailyData,
+            onEditDailyData = onEditDailyData,
             modifier = Modifier.padding(16.dp)
         )
 
@@ -145,6 +149,63 @@ private fun TaskList(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun DailyHeader(
+    dailyData: DailyData,
+    onEditDailyData: (DailyData) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showEditDialog by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = { showEditDialog = true }
+                )
+            }
+    ) {
+        // 日期和基本信息
+        Text(
+            text = formatDateInfo(dailyData),
+            style = MaterialTheme.typography.titleMedium
+        )
+        
+        // 可以添加更多daily data信息的显示
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Sleep: ${dailyData.sleep}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Income: ${dailyData.income}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Expenditure: ${dailyData.expenditure}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+
+    if (showEditDialog) {
+        EditDailyDataDialog(
+            dailyData = dailyData,
+            onDismiss = { showEditDialog = false },
+            onConfirm = { 
+                onEditDailyData(it)
+                showEditDialog = false
+            }
+        )
     }
 }
 
