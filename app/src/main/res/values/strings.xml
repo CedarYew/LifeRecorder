@@ -10,4 +10,8 @@
     <string name="repository">GitHub Repo</string>
     <string name="about_us_url">https://example.com/about</string>
     <string name="github_repo_url">https://github.com/CedarYew/TimeRecorder</string>
+    <string name="delete_confirm_title">Delete Record</string>
+    <string name="delete_confirm_message">Are you sure to delete this record?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -30,6 +30,7 @@ import com.example.test.data.model.DailyData
 import com.example.test.ui.dialog.CalendarDialog
 import com.example.test.ui.dialog.EditTaskDialog
 import com.example.test.ui.dialog.EditDailyDataDialog
+import com.example.test.ui.dialog.DeleteConfirmDialog
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.platform.LocalContext
@@ -401,12 +402,27 @@ fun TaskItem(
     onToggleStart: () -> Unit,
     onToggleEnd: () -> Unit
 ) {
-    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    val isOverdue = task.planStart < currentHour
-    var isDeleted by remember { mutableStateOf(false) }
-    val state = rememberSwipeToDismissBoxState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val state = rememberSwipeToDismissBoxState(
+        confirmValueChange = { swipeValue ->
+            if (swipeValue == SwipeToDismissBoxValue.EndToStart) {
+                showDeleteDialog = true
+                false
+            } else true
+        },
+        positionalThreshold = { totalDistance -> totalDistance * 0.25f }
+    )
 
-    if (isDeleted) return
+    if (showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                onDelete()
+                showDeleteDialog = false
+            }
+        )
+    }
 
     SwipeToDismissBox(
         state = state,
@@ -437,7 +453,7 @@ fun TaskItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    if (isOverdue) Color.Gray.copy(alpha = 0.2f)
+                    if (task.planStart < Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) Color.Gray.copy(alpha = 0.2f)
                     else Color.LightGray.copy(alpha = 0.1f)
                 )
                 .padding(8.dp)
@@ -517,12 +533,11 @@ fun TaskItem(
                 )
             }
         }
+    }
 
-        LaunchedEffect(state.targetValue) {
-            if (state.targetValue == SwipeToDismissBoxValue.EndToStart) {
-                isDeleted = true
-                onDelete()
-            }
+    LaunchedEffect(state.currentValue) {
+        if (state.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            state.reset()
         }
     }
 }
