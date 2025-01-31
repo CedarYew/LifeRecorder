@@ -5,4 +5,9 @@
     <string name="add_task">Add Task</string>
     <string name="income">%.2f</string>
     <string name="expenditure">%.2f</string>
+    <string name="user_nickname">Time Recorder</string>
+    <string name="about_us">About Us</string>
+    <string name="repository">GitHub Repo</string>
+    <string name="about_us_url">https://example.com/about</string>
+    <string name="github_repo_url">https://github.com/CedarYew/TimeRecorder</string>
 </resources>

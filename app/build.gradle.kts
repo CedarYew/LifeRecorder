@@ -79,4 +79,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
     implementation(libs.material.icons.extended)
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 }

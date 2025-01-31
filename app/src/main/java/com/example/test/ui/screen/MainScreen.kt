@@ -1,5 +1,7 @@
 package com.example.test.ui.screen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -30,6 +32,10 @@ import com.example.test.ui.dialog.EditTaskDialog
 import com.example.test.ui.dialog.EditDailyDataDialog
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -48,13 +54,18 @@ fun MainScreen(
     onDateSelected: (Long) -> Unit,
     onUpdateDailyData: (DailyData) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var showCalendarDialog by remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            NavigationDrawerContent()
+            NavigationDrawerContent(onClose = {
+                scope.launch {
+                    drawerState.close()
+                }
+            })
         }
     ) {
         Scaffold(
@@ -62,7 +73,15 @@ fun MainScreen(
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_name)) },
                     navigationIcon = {
-                        IconButton(onClick = { /* 打开侧边栏 */ }) {
+                        IconButton(onClick = {
+                            scope.launch {
+                                if (drawerState.isOpen) {
+                                    drawerState.close()
+                                } else {
+                                    drawerState.open()
+                                }
+                            }
+                        }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_menu),
                                 contentDescription = stringResource(R.string.menu)
@@ -293,18 +312,84 @@ private fun IncomeExpenseDisplay(income: Double, expenditure: Double) {
 }
 
 @Composable
-private fun NavigationDrawerContent() {
-    // 侧边栏内容实现
+private fun NavigationDrawerContent(onClose: () -> Unit) {
+    val context = LocalContext.current
+    
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .width(300.dp)
+            .width(280.dp)
             .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
     ) {
-        Text("Navigation Drawer")
-        // 添加更多侧边栏内容
+        // 用户信息头部
+        Surface(
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_account),
+                    contentDescription = "用户头像",
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(R.string.user_nickname),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        // 功能菜单
+        Column(modifier = Modifier.padding(16.dp)) {
+            NavigationMenuItem(
+                icon = R.drawable.ic_info,
+                text = stringResource(R.string.about_us),
+                onClick = {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(context.getString(R.string.about_us_url))
+                        }
+                    )
+                }
+            )
+            
+            NavigationMenuItem(
+                icon = R.drawable.github_mark,
+                text = stringResource(R.string.repository),
+                onClick = {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(context.getString(R.string.github_repo_url))
+                        }
+                    )
+                }
+            )
+        }
     }
+}
+
+@Composable
+private fun NavigationMenuItem(
+    icon: Int,
+    text: String,
+    onClick: () -> Unit
+) {
+    ListItem(
+        headlineContent = { Text(text) },
+        leadingContent = {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        modifier = Modifier.clickable(onClick = onClick)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
