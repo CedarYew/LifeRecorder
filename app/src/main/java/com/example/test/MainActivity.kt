@@ -34,7 +34,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TestTheme {
-                val tasks by viewModel.allTasks.collectAsState(initial = emptyList())
+                val tasks by viewModel.currentTasks.collectAsState()
+                val currentDate by viewModel.currentDate.collectAsState()
                 var showEditDialog by remember { mutableStateOf(false) }
                 var currentEditTask by remember { mutableStateOf<Task?>(null) }
                 
@@ -83,6 +84,10 @@ class MainActivity : ComponentActivity() {
                     onDismissDialog = {
                         showEditDialog = false
                         currentEditTask = null
+                    },
+                    currentDate = currentDate,
+                    onDateSelected = { date ->
+                        viewModel.updateCurrentDate(date)
                     }
                 )
             }

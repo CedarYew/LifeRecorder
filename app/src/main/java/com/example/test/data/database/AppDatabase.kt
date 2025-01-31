@@ -8,7 +8,7 @@ import com.example.test.data.model.Task
 
 @Database(
     entities = [Task::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

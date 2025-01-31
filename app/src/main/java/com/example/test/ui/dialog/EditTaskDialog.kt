@@ -13,7 +13,8 @@ import java.util.Date
 fun EditTaskDialog(
     task: Task?,
     onDismiss: () -> Unit,
-    onConfirm: (Task) -> Unit
+    onConfirm: (Task) -> Unit,
+    currentDate: Int
 ) {
     var name by remember { mutableStateOf(task?.name ?: "") }
     var description by remember { mutableStateOf(task?.description ?: "") }
@@ -74,7 +75,8 @@ fun EditTaskDialog(
                         startTime = task?.startTime,
                         endTime = task?.endTime,
                         createTime = task?.createTime ?: Date().toString(),
-                        updateTime = Date().toString()
+                        updateTime = Date().toString(),
+                        date = currentDate
                     )
                     onConfirm(newTask)
                 }

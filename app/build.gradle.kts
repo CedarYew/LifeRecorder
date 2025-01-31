@@ -71,4 +71,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata)
 
     implementation(libs.androidx.compose.animation)
+
+    val lifecycleVersion = "2.7.0"
+    
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
 }

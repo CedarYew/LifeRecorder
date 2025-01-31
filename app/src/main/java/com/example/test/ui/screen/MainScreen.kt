@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.test.R
 import com.example.test.data.model.Task
+import com.example.test.ui.dialog.CalendarDialog
 import com.example.test.ui.dialog.EditTaskDialog
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,9 +36,12 @@ fun MainScreen(
     onSaveTask: (Task) -> Unit,
     showEditDialog: Boolean,
     currentEditTask: Task?,
-    onDismissDialog: () -> Unit
+    onDismissDialog: () -> Unit,
+    currentDate: Int,
+    onDateSelected: (Long) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    var showCalendarDialog by remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -58,7 +62,7 @@ fun MainScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* 打开日历 */ }) {
+                        IconButton(onClick = { showCalendarDialog = true }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_calendar),
                                 contentDescription = stringResource(R.string.calendar)
@@ -91,7 +95,18 @@ fun MainScreen(
         EditTaskDialog(
             task = currentEditTask,
             onDismiss = onDismissDialog,
-            onConfirm = onSaveTask
+            onConfirm = onSaveTask,
+            currentDate = currentDate
+        )
+    }
+
+    if (showCalendarDialog) {
+        CalendarDialog(
+            onDismiss = { showCalendarDialog = false },
+            onDateSelected = { date ->
+                onDateSelected(date.time)
+                showCalendarDialog = false
+            }
         )
     }
 }
