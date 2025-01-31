@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.data.model.Task
 import com.example.test.data.repository.TaskRepository
+import com.example.test.data.model.DailyData
+import com.example.test.data.repository.DailyDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,16 +15,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
-class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
+class TaskViewModel(
+    private val taskRepository: TaskRepository,
+    private val dailyDataRepository: DailyDataRepository
+) : ViewModel() {
     private val _currentDate = MutableStateFlow(getCurrentDateAsInt())
     val currentDate: StateFlow<Int> = _currentDate.asStateFlow()
 
     val currentTasks: StateFlow<List<Task>> = currentDate.flatMapLatest { date ->
-        repository.getTasksByDate(date)
+        taskRepository.getTasksByDate(date)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
+    )
+
+    val currentDailyData: StateFlow<DailyData> = currentDate.flatMapLatest { date ->
+        dailyDataRepository.getDailyDataByDate(date)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        DailyData(date = getCurrentDateAsInt())
     )
 
     fun updateCurrentDate(timestamp: Long) {
@@ -30,15 +43,19 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun addTask(task: Task) = viewModelScope.launch {
-        repository.insert(task.copy(date = currentDate.value))
+        taskRepository.insert(task.copy(date = currentDate.value))
     }
 
     fun updateTask(task: Task) = viewModelScope.launch {
-        repository.update(task)
+        taskRepository.update(task)
     }
 
     fun deleteTask(taskId: Int) = viewModelScope.launch {
-        repository.delete(taskId)
+        taskRepository.delete(taskId)
+    }
+
+    fun updateDailyData(dailyData: DailyData) = viewModelScope.launch {
+        dailyDataRepository.insertOrUpdate(dailyData)
     }
 
     private fun getCurrentDateAsInt(): Int {

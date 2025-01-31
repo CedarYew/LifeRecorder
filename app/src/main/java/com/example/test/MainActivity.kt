@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.test.data.model.Task
 import com.example.test.data.repository.TaskRepository
+import com.example.test.data.repository.DailyDataRepository
 import com.example.test.ui.screen.MainScreen
 import com.example.test.ui.theme.TestTheme
 import com.example.test.ui.viewmodel.TaskViewModel
@@ -22,9 +23,10 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 val database = (application as TimeRecorderApplication).database
-                val repository = TaskRepository(database.taskDao())
+                val taskRepository = TaskRepository(database.taskDao())
+                val dailyDataRepository = DailyDataRepository(database.dailyDataDao())
                 @Suppress("UNCHECKED_CAST")
-                return TaskViewModel(repository) as T
+                return TaskViewModel(taskRepository, dailyDataRepository) as T
             }
         }
     }
@@ -36,11 +38,13 @@ class MainActivity : ComponentActivity() {
             TestTheme {
                 val tasks by viewModel.currentTasks.collectAsState()
                 val currentDate by viewModel.currentDate.collectAsState()
+                val dailyData by viewModel.currentDailyData.collectAsState()
                 var showEditDialog by remember { mutableStateOf(false) }
                 var currentEditTask by remember { mutableStateOf<Task?>(null) }
                 
                 MainScreen(
                     tasks = tasks,
+                    dailyData = dailyData,
                     onAddTask = {
                         showEditDialog = true
                         currentEditTask = null

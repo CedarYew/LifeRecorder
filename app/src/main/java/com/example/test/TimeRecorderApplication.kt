@@ -52,6 +52,22 @@ class TimeRecorderApplication : Application() {
         }
     }
 
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS daily_data (
+                    date INTEGER PRIMARY KEY NOT NULL,
+                    weather TEXT NOT NULL DEFAULT 'Sunny',
+                    mood TEXT NOT NULL DEFAULT 'Happy',
+                    sleep TEXT NOT NULL DEFAULT 'Good',
+                    income REAL NOT NULL DEFAULT 0,
+                    expenditure REAL NOT NULL DEFAULT 0,
+                    totalBalance REAL NOT NULL DEFAULT 0
+                )
+            """)
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         database = Room.databaseBuilder(
@@ -59,8 +75,7 @@ class TimeRecorderApplication : Application() {
             AppDatabase::class.java,
             "time_recorder_database"
         )
-//        .addMigrations(MIGRATION_1_2) // 添加迁移策略
-        .fallbackToDestructiveMigration() // 在版本更新时删除旧数据库并创建新数据库
+        .fallbackToDestructiveMigration()
         .build()
     }
 } 

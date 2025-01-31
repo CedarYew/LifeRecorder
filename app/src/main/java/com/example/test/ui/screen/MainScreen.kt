@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.test.R
 import com.example.test.data.model.Task
+import com.example.test.data.model.DailyData
 import com.example.test.ui.dialog.CalendarDialog
 import com.example.test.ui.dialog.EditTaskDialog
 import java.text.SimpleDateFormat
@@ -28,6 +29,7 @@ import java.util.*
 @Composable
 fun MainScreen(
     tasks: List<Task>,
+    dailyData: DailyData,
     onAddTask: () -> Unit,
     onEditTask: (Task) -> Unit,
     onDeleteTask: (Int) -> Unit,
@@ -83,6 +85,7 @@ fun MainScreen(
             TaskList(
                 modifier = Modifier.padding(paddingValues),
                 tasks = tasks,
+                dailyData = dailyData,
                 onEditTask = onEditTask,
                 onDeleteTask = onDeleteTask,
                 onToggleStart = onToggleStart,
@@ -115,6 +118,7 @@ fun MainScreen(
 private fun TaskList(
     modifier: Modifier = Modifier,
     tasks: List<Task>,
+    dailyData: DailyData,
     onEditTask: (Task) -> Unit,
     onDeleteTask: (Int) -> Unit,
     onToggleStart: (Task) -> Unit,
@@ -123,7 +127,7 @@ private fun TaskList(
     Column(modifier = modifier.fillMaxSize()) {
         // 日期和天气信息
         Text(
-            text = getCurrentDateInfo(),
+            text = formatDateInfo(dailyData),
             modifier = Modifier.padding(16.dp)
         )
 
@@ -304,8 +308,10 @@ private fun formatTime(timeString: String): String {
     }
 }
 
-private fun getCurrentDateInfo(): String {
-    val calendar = Calendar.getInstance()
+private fun formatDateInfo(dailyData: DailyData): String {
+    val calendar = Calendar.getInstance().apply {
+        set(dailyData.date / 10000, (dailyData.date % 10000) / 100 - 1, dailyData.date % 100)
+    }
     val dateFormat = SimpleDateFormat("M.d, EEEE", Locale.getDefault())
-    return "${dateFormat.format(calendar.time)}, Sunny, Happy"
+    return "${dateFormat.format(calendar.time)}, ${dailyData.weather}, ${dailyData.mood}"
 } 
