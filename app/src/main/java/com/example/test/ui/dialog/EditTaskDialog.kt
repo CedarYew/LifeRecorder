@@ -25,7 +25,7 @@ fun EditTaskDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (task == null) "New Task" else "Edit Task") },
+        title = { Text(if (task == null) "New Record" else "Edit Record") },
         text = {
             Column(
                 modifier = Modifier
@@ -36,7 +36,7 @@ fun EditTaskDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Task Name") },
+                    label = { Text("Name") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )

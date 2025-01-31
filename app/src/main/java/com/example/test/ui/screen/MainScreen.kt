@@ -1,14 +1,18 @@
 package com.example.test.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.MoneyOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -132,7 +136,7 @@ private fun TaskList(
         DailyHeader(
             dailyData = dailyData,
             onEditDailyData = onEditDailyData,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(6.dp)
         )
 
         // 任务列表
@@ -160,39 +164,54 @@ private fun DailyHeader(
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
 
-    Column(
+    Surface(
         modifier = modifier
             .fillMaxWidth()
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onDoubleTap = { showEditDialog = true }
-                )
-            }
+            .clickable { showEditDialog = true }
+            .padding(8.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = RoundedCornerShape(8.dp)
     ) {
-        // 日期和基本信息
-        Text(
-            text = formatDateInfo(dailyData),
-            style = MaterialTheme.typography.titleMedium
-        )
-        
-        // 可以添加更多daily data信息的显示
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp),
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Sleep: ${dailyData.sleep}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "Income: ${dailyData.income}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "Expenditure: ${dailyData.expenditure}",
-                style = MaterialTheme.typography.bodyMedium
+            // 新增日期信息
+            DateDisplay(dailyData.date)
+            
+            // 原有图标部分
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    imageVector = dailyData.mood.icon,
+                    contentDescription = "心情状态",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                
+                Icon(
+                    imageVector = dailyData.weather.icon,
+                    contentDescription = "天气状况",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                
+                Icon(
+                    imageVector = dailyData.sleep.icon,
+                    contentDescription = "睡眠质量",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            IncomeExpenseDisplay(
+                income = dailyData.income,
+                expenditure = dailyData.expenditure
             )
         }
     }
@@ -206,6 +225,70 @@ private fun DailyHeader(
                 showEditDialog = false
             }
         )
+    }
+}
+
+@Composable
+private fun DateDisplay(date: Int) {
+    val calendar = remember {
+        Calendar.getInstance().apply {
+            set(Calendar.YEAR, date / 10000)
+            set(Calendar.MONTH, (date % 10000) / 100 - 1)
+            set(Calendar.DAY_OF_MONTH, date % 100)
+        }
+    }
+
+    // val dateFormat = remember { SimpleDateFormat("M月d日 EEEE", Locale.CHINA) }
+    val dateFormat = remember { 
+        SimpleDateFormat("MM/dd EEE", Locale.US)
+    }
+    
+    Text(
+        text = dateFormat.format(calendar.time),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary
+    )
+}
+
+@Composable
+private fun IncomeExpenseDisplay(income: Double, expenditure: Double) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // 收入
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.AttachMoney,
+                contentDescription = "收入",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(R.string.income, income),
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+        
+        // 支出
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoneyOff,
+                contentDescription = "支出",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(R.string.expenditure, expenditure),
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
     }
 }
 

@@ -3,4 +3,6 @@
     <string name="calendar">Calendar</string>
     <string name="menu">Menu</string>
     <string name="add_task">Add Task</string>
+    <string name="income">%.2f</string>
+    <string name="expenditure">%.2f</string>
 </resources>
