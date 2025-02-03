@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.test.R
 import com.example.test.data.model.Task
 import com.example.test.ui.dialog.EditTaskDialog
+import com.example.test.ui.component.TaskList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,24 +46,14 @@ fun TodoScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 任务列表
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(tasks) { task ->
-                    TodoTaskItem(
-                        task = task,
-                        onEdit = { onEditTask(task) },
-                        onDelete = { onDeleteTask(task.id) },
-                        onToggleStart = { onToggleStart(task) },
-                        onToggleEnd = { onToggleEnd(task) }
-                    )
-                }
-            }
+            TaskList(
+                tasks = tasks,
+                onEditTask = onEditTask,
+                onDeleteTask = onDeleteTask,
+                onToggleStart = onToggleStart,
+                onToggleEnd = onToggleEnd,
+                modifier = Modifier.weight(1f)
+            )
         }
 
         // 编辑对话框
@@ -71,7 +62,6 @@ fun TodoScreen(
                 task = currentEditTask,
                 onDismiss = onDismissDialog,
                 onConfirm = { task ->
-                    // 确保新建的 ToDo 任务的 date 为 -1
                     onSaveTask(task.copy(date = -1))
                 },
                 currentDate = -1

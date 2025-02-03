@@ -22,51 +22,60 @@ class TaskViewModel(
     private val _currentDate = MutableStateFlow(getCurrentDateAsInt())
     val currentDate: StateFlow<Int> = _currentDate.asStateFlow()
 
-    val currentTasks: StateFlow<List<Task>> = currentDate.flatMapLatest { date ->
-        taskRepository.getTasksByDate(date)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        emptyList()
-    )
-
-    val currentDailyData: StateFlow<DailyData> = currentDate.flatMapLatest { date ->
-        dailyDataRepository.getDailyDataByDate(date)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        DailyData(date = getCurrentDateAsInt())
-    )
-
-    val todoTasks: StateFlow<List<Task>> = taskRepository.getTasksByDate(-1)
+    val currentTasks: StateFlow<List<Task>> = _currentDate
+        .flatMapLatest { date ->
+            taskRepository.getTasksByDate(date)
+        }
         .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val todoTasks: StateFlow<List<Task>> = taskRepository
+        .getTasksByDate(-1)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val currentDailyData: StateFlow<DailyData> = _currentDate
+        .flatMapLatest { date ->
+            dailyDataRepository.getDailyDataByDate(date)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = DailyData(date = getCurrentDateAsInt())
         )
 
     fun updateCurrentDate(timestamp: Long) {
         _currentDate.value = convertTimestampToDateInt(timestamp)
     }
 
-    fun addTask(task: Task, isTodo: Boolean = false) = viewModelScope.launch {
-        taskRepository.insert(
-            task.copy(
-                date = if (isTodo) -1 else currentDate.value
-            )
-        )
+    fun addTask(task: Task) {
+        viewModelScope.launch {
+            taskRepository.insert(task)
+        }
     }
 
-    fun updateTask(task: Task) = viewModelScope.launch {
-        taskRepository.update(task)
+    fun updateTask(task: Task) {
+        viewModelScope.launch {
+            taskRepository.update(task)
+        }
     }
 
-    fun deleteTask(taskId: Int) = viewModelScope.launch {
-        taskRepository.delete(taskId)
+    fun deleteTask(taskId: Int) {
+        viewModelScope.launch {
+            taskRepository.delete(taskId)
+        }
     }
 
-    fun updateDailyData(dailyData: DailyData) = viewModelScope.launch {
-        dailyDataRepository.insertOrUpdate(dailyData)
+    fun updateDailyData(dailyData: DailyData) {
+        viewModelScope.launch {
+            dailyDataRepository.insertOrUpdate(dailyData)
+        }
     }
 
     private fun getCurrentDateAsInt(): Int {

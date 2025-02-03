@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestTheme {
                 val tasks by viewModel.currentTasks.collectAsState()
+                val todoTasks by viewModel.todoTasks.collectAsState()
                 val currentDate by viewModel.currentDate.collectAsState()
                 val dailyData by viewModel.currentDailyData.collectAsState()
                 var showEditDialog by remember { mutableStateOf(false) }
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 
                 MainScreen(
                     tasks = tasks,
+                    todoTasks = todoTasks,
                     dailyData = dailyData,
                     onAddTask = {
                         showEditDialog = true
