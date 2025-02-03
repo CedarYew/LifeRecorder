@@ -38,12 +38,23 @@ class TaskViewModel(
         DailyData(date = getCurrentDateAsInt())
     )
 
+    val todoTasks: StateFlow<List<Task>> = taskRepository.getTasksByDate(-1)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
+
     fun updateCurrentDate(timestamp: Long) {
         _currentDate.value = convertTimestampToDateInt(timestamp)
     }
 
-    fun addTask(task: Task) = viewModelScope.launch {
-        taskRepository.insert(task.copy(date = currentDate.value))
+    fun addTask(task: Task, isTodo: Boolean = false) = viewModelScope.launch {
+        taskRepository.insert(
+            task.copy(
+                date = if (isTodo) -1 else currentDate.value
+            )
+        )
     }
 
     fun updateTask(task: Task) = viewModelScope.launch {

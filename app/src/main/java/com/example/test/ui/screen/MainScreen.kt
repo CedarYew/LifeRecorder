@@ -36,6 +36,8 @@ import java.util.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import com.example.test.ui.navigation.NavigationItem
+import com.example.test.ui.screen.TodoScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,11 +55,13 @@ fun MainScreen(
     onDismissDialog: () -> Unit,
     currentDate: Int,
     onDateSelected: (Long) -> Unit,
-    onUpdateDailyData: (DailyData) -> Unit
+    onUpdateDailyData: (DailyData) -> Unit,
+    todoTasks: List<Task> = emptyList()
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var showCalendarDialog by remember { mutableStateOf(false) }
+    var selectedNavigation by remember { mutableStateOf(NavigationItem.TODAY) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -106,18 +110,45 @@ fun MainScreen(
                         contentDescription = stringResource(R.string.add_task)
                     )
                 }
+            },
+            bottomBar = {
+                NavigationBar {
+                    NavigationItem.values().forEach { item ->
+                        NavigationBarItem(
+                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            label = { Text(item.label) },
+                            selected = selectedNavigation == item,
+                            onClick = { selectedNavigation = item }
+                        )
+                    }
+                }
             }
         ) { paddingValues ->
-            TaskList(
-                modifier = Modifier.padding(paddingValues),
-                tasks = tasks,
-                dailyData = dailyData,
-                onEditTask = onEditTask,
-                onDeleteTask = onDeleteTask,
-                onToggleStart = onToggleStart,
-                onToggleEnd = onToggleEnd,
-                onEditDailyData = onUpdateDailyData
-            )
+            when (selectedNavigation) {
+                NavigationItem.TODAY -> TodayContent(
+                    modifier = Modifier.padding(paddingValues),
+                    tasks = tasks,
+                    dailyData = dailyData,
+                    onEditTask = onEditTask,
+                    onDeleteTask = onDeleteTask,
+                    onToggleStart = onToggleStart,
+                    onToggleEnd = onToggleEnd,
+                    onEditDailyData = onUpdateDailyData
+                )
+                NavigationItem.TODO -> TodoScreen(
+                    tasks = todoTasks,
+                    onAddTask = onAddTask,
+                    onEditTask = onEditTask,
+                    onDeleteTask = onDeleteTask,
+                    onToggleStart = onToggleStart,
+                    onToggleEnd = onToggleEnd,
+                    onSaveTask = onSaveTask,
+                    showEditDialog = showEditDialog,
+                    currentEditTask = currentEditTask,
+                    onDismissDialog = onDismissDialog
+                )
+                NavigationItem.ME -> com.example.test.ui.screen.MeScreen()
+            }
         }
     }
 
@@ -142,7 +173,7 @@ fun MainScreen(
 }
 
 @Composable
-private fun TaskList(
+private fun TodayContent(
     modifier: Modifier = Modifier,
     tasks: List<Task>,
     dailyData: DailyData,
@@ -558,4 +589,31 @@ private fun formatDateInfo(dailyData: DailyData): String {
     }
     val dateFormat = SimpleDateFormat("M.d, EEEE", Locale.getDefault())
     return "${dateFormat.format(calendar.time)}, ${dailyData.weather}, ${dailyData.mood}"
+}
+
+@Composable
+private fun TodoScreen(
+    tasks: List<Task>,
+    onAddTask: () -> Unit,
+    onEditTask: (Task) -> Unit,
+    onDeleteTask: (Int) -> Unit,
+    onToggleStart: (Task) -> Unit,
+    onToggleEnd: (Task) -> Unit,
+    onSaveTask: (Task) -> Unit,
+    showEditDialog: Boolean,
+    currentEditTask: Task?,
+    onDismissDialog: () -> Unit
+) {
+    com.example.test.ui.screen.TodoScreen(
+        tasks = tasks,
+        onAddTask = onAddTask,
+        onEditTask = onEditTask,
+        onDeleteTask = onDeleteTask,
+        onToggleStart = onToggleStart,
+        onToggleEnd = onToggleEnd,
+        onSaveTask = onSaveTask,
+        showEditDialog = showEditDialog,
+        currentEditTask = currentEditTask,
+        onDismissDialog = onDismissDialog
+    )
 } 
