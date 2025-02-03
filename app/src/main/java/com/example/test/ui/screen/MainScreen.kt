@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import com.example.test.ui.navigation.NavigationItem
-import com.example.test.ui.screen.TodoScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -590,30 +589,3 @@ private fun formatDateInfo(dailyData: DailyData): String {
     val dateFormat = SimpleDateFormat("M.d, EEEE", Locale.getDefault())
     return "${dateFormat.format(calendar.time)}, ${dailyData.weather}, ${dailyData.mood}"
 }
-
-@Composable
-private fun TodoScreen(
-    tasks: List<Task>,
-    onAddTask: () -> Unit,
-    onEditTask: (Task) -> Unit,
-    onDeleteTask: (Int) -> Unit,
-    onToggleStart: (Task) -> Unit,
-    onToggleEnd: (Task) -> Unit,
-    onSaveTask: (Task) -> Unit,
-    showEditDialog: Boolean,
-    currentEditTask: Task?,
-    onDismissDialog: () -> Unit
-) {
-    com.example.test.ui.screen.TodoScreen(
-        tasks = tasks,
-        onAddTask = onAddTask,
-        onEditTask = onEditTask,
-        onDeleteTask = onDeleteTask,
-        onToggleStart = onToggleStart,
-        onToggleEnd = onToggleEnd,
-        onSaveTask = onSaveTask,
-        showEditDialog = showEditDialog,
-        currentEditTask = currentEditTask,
-        onDismissDialog = onDismissDialog
-    )
-} 
