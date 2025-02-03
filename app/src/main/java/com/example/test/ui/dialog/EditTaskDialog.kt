@@ -21,8 +21,34 @@ fun EditTaskDialog(
     var name by remember { mutableStateOf(task?.name ?: "") }
     var description by remember { mutableStateOf(task?.description ?: "") }
     var planStart by remember { mutableStateOf(task?.planStart?.toString() ?: "9") }
-    var startTime by remember { mutableStateOf(task?.startTime) }
-    var endTime by remember { mutableStateOf(task?.endTime) }
+    var startTime by remember { 
+        mutableStateOf(
+            task?.startTime?.let { time ->
+                try {
+                    val fullFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+                    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                    val date = fullFormat.parse(time)
+                    timeFormat.format(date)
+                } catch (e: Exception) {
+                    time // 如果解析失败，保留原始值
+                }
+            }
+        )
+    }
+    var endTime by remember { 
+        mutableStateOf(
+            task?.endTime?.let { time ->
+                try {
+                    val fullFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+                    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                    val date = fullFormat.parse(time)
+                    timeFormat.format(date)
+                } catch (e: Exception) {
+                    time // 如果解析失败，保留原始值
+                }
+            }
+        )
+    }
     var date by remember { mutableStateOf(task?.date ?: currentDate) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showStartTimePicker by remember { mutableStateOf(false) }
@@ -118,8 +144,20 @@ fun EditTaskDialog(
                             name = name,
                             description = description,
                             planStart = planStart.toIntOrNull() ?: 0,
-                            startTime = startTime,
-                            endTime = endTime,
+                            startTime = startTime?.let { time ->
+                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+                                    .format(
+                                        SimpleDateFormat("HH:mm", Locale.getDefault())
+                                            .parse(time) ?: Date()
+                                    )
+                            },
+                            endTime = endTime?.let { time ->
+                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+                                    .format(
+                                        SimpleDateFormat("HH:mm", Locale.getDefault())
+                                            .parse(time) ?: Date()
+                                    )
+                            },
                             date = date
                         )
                     )
